@@ -1,6 +1,6 @@
 // Core LifeOS data model types
 
-export type TaskStatus = 'todo' | 'in_progress' | 'done' | 'cancelled';
+export type TaskStatus = 'inbox' | 'todo' | 'in_progress' | 'done' | 'cancelled';
 export type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
 export type HabitFrequency = 'daily' | 'weekly';
 export type LifeEventType = 'birthday' | 'anniversary' | 'wedding' | 'holiday' | 'custom';
@@ -48,6 +48,9 @@ export interface Task {
   company_id: string | null;
   parent_task_id: string | null;
   recurring_rule: string | null; // iCal RRULE string
+  created_by: string | null;
+  assigned_to: string | null;
+  completed_at: string | null;
   created_at: string;
   updated_at: string;
   // joined
@@ -71,11 +74,16 @@ export interface Habit {
   id: string;
   user_id: string;
   title: string;
+  description: string | null;
   frequency: HabitFrequency;
   target_days: number[] | null; // 0=Sun..6=Sat for weekly habits
+  icon: string | null;
+  color: string | null;
+  is_archived: boolean;
   created_at: string;
   // computed
   streak?: number;
+  longest_streak?: number;
   completedToday?: boolean;
 }
 
@@ -87,13 +95,23 @@ export interface HabitLog {
   date: string; // YYYY-MM-DD
 }
 
+export type HeatmapStatus = 'none' | 'completed' | 'missed';
+
+export interface HeatmapDay {
+  date: string; // YYYY-MM-DD
+  status: HeatmapStatus;
+}
+
 export interface Note {
   id: string;
   user_id: string;
+  habit_id: string | null;
   title: string;
   body: string | null;
+  pinned: boolean;
   linked_task_id: string | null;
   created_at: string;
+  updated_at: string;
 }
 
 export interface Reminder {
@@ -112,6 +130,7 @@ export interface Contact {
   user_id: string;
   name: string;
   birthday: string | null; // MM-DD or YYYY-MM-DD
+  photo_url: string | null;
   email: string | null;
   phone: string | null;
   created_at: string;
@@ -123,6 +142,23 @@ export interface LifeEvent {
   title: string;
   event_type: LifeEventType;
   event_date: string; // YYYY-MM-DD
-  advance_days: number; // days before to notify
+  advance_days: number; // days before to notify (legacy; kept for compat)
+  recurring: boolean;
+  notes: string | null;
+  notify_1_month: boolean;
+  notify_1_week: boolean;
+  notify_1_day: boolean;
   created_at: string;
+}
+
+export interface NotificationPreferences {
+  id: string;
+  user_id: string;
+  birthdays_enabled: boolean;
+  life_events_enabled: boolean;
+  tasks_enabled: boolean;
+  quiet_hours_start: string | null; // HH:MM
+  quiet_hours_end: string | null;   // HH:MM
+  created_at: string;
+  updated_at: string;
 }
