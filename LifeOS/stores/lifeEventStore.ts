@@ -6,7 +6,7 @@ interface LifeEventState {
   lifeEvents: LifeEvent[];
   loading: boolean;
   fetch: (userId: string) => Promise<void>;
-  create: (lifeEvent: Omit<LifeEvent, 'id' | 'created_at'>) => Promise<void>;
+  create: (lifeEvent: Omit<LifeEvent, 'id' | 'created_at'>) => Promise<LifeEvent | null>;
   update: (id: string, updates: Partial<LifeEvent>) => Promise<void>;
   remove: (id: string) => Promise<void>;
   /** Returns events whose notification window begins within the next `days` days */
@@ -36,6 +36,7 @@ export const useLifeEventStore = create<LifeEventState>((set, get) => ({
         ),
       });
     }
+    return data ?? null;
   },
 
   update: async (id, updates) => {
@@ -52,13 +53,15 @@ export const useLifeEventStore = create<LifeEventState>((set, get) => ({
 
   upcoming: (days = 30) => {
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const currentYear = today.getFullYear();
     return get().lifeEvents.filter((event) => {
-      // Strip year from event_date for recurring (birthday/anniversary/etc.)
       const [, month, day] = event.event_date.split('-');
       const thisYear = new Date(`${currentYear}-${month}-${day}`);
+      // Earliest notification window: 1 month before
+      const minAdvance = event.notify_1_month ? 31 : event.notify_1_week ? 7 : event.notify_1_day ? 1 : 0;
       const notifyDate = new Date(thisYear);
-      notifyDate.setDate(notifyDate.getDate() - event.advance_days);
+      notifyDate.setDate(notifyDate.getDate() - minAdvance);
       return notifyDate <= new Date(today.getTime() + days * 86_400_000) && thisYear >= today;
     });
   },

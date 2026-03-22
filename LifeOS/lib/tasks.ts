@@ -64,6 +64,9 @@ function normalizeTask(row: Record<string, unknown>): Task {
   return { ...row, tags } as unknown as Task;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Supabase query builder lacks precise filter chain types
+type SupabaseFilterQuery = any;
+
 function applyFilters(
   query: ReturnType<typeof supabase.from>,
   filters: TaskFilters,
@@ -80,46 +83,46 @@ function applyFilters(
 
   if (status) {
     if (Array.isArray(status)) {
-      query = (query as any).in('status', status);
+      query = (query as SupabaseFilterQuery).in('status', status);
     } else {
-      query = (query as any).eq('status', status);
+      query = (query as SupabaseFilterQuery).eq('status', status);
     }
   }
   if (priority) {
     if (Array.isArray(priority)) {
-      query = (query as any).in('priority', priority);
+      query = (query as SupabaseFilterQuery).in('priority', priority);
     } else {
-      query = (query as any).eq('priority', priority);
+      query = (query as SupabaseFilterQuery).eq('priority', priority);
     }
   }
   if (company_id !== undefined) {
     if (company_id === null) {
-      query = (query as any).is('company_id', null);
+      query = (query as SupabaseFilterQuery).is('company_id', null);
     } else {
-      query = (query as any).eq('company_id', company_id);
+      query = (query as SupabaseFilterQuery).eq('company_id', company_id);
     }
   }
   if (project_id !== undefined) {
     if (project_id === null) {
-      query = (query as any).is('project_id', null);
+      query = (query as SupabaseFilterQuery).is('project_id', null);
     } else {
-      query = (query as any).eq('project_id', project_id);
+      query = (query as SupabaseFilterQuery).eq('project_id', project_id);
     }
   }
-  if (due_date_from) query = (query as any).gte('due_date', due_date_from);
-  if (due_date_to) query = (query as any).lte('due_date', due_date_to);
+  if (due_date_from) query = (query as SupabaseFilterQuery).gte('due_date', due_date_from);
+  if (due_date_to) query = (query as SupabaseFilterQuery).lte('due_date', due_date_to);
 
   const today = todayStr();
   if (due_filter === 'due_today') {
-    query = (query as any).eq('due_date', today);
+    query = (query as SupabaseFilterQuery).eq('due_date', today);
   } else if (due_filter === 'overdue') {
-    query = (query as any)
+    query = (query as SupabaseFilterQuery)
       .lt('due_date', today)
       .not('status', 'in', '(done,cancelled)');
   } else if (due_filter === 'no_due_date') {
-    query = (query as any).is('due_date', null);
+    query = (query as SupabaseFilterQuery).is('due_date', null);
   } else if (due_filter === 'due_this_week') {
-    query = (query as any).gte('due_date', today).lte('due_date', weekEndStr());
+    query = (query as SupabaseFilterQuery).gte('due_date', today).lte('due_date', weekEndStr());
   }
 
   return query;
@@ -145,9 +148,9 @@ export async function listTasks(params: TaskListParams = {}): Promise<Task[]> {
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1);
 
-  query = applyFilters(query as any, filters) as any;
+  query = applyFilters(query as SupabaseFilterQuery, filters) as SupabaseFilterQuery;
 
-  const { data, error } = await (query as any);
+  const { data, error } = await (query as SupabaseFilterQuery);
   if (error) throw error;
   return (data ?? []).map(normalizeTask);
 }

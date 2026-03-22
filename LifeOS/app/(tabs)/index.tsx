@@ -13,7 +13,7 @@ export default function TodayScreen() {
 
   useEffect(() => {
     if (user) {
-      fetchTasks(user.id);
+      fetchTasks();
       fetchHabits(user.id);
     }
   }, [user]);

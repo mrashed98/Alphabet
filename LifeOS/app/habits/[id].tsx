@@ -40,7 +40,7 @@ export default function HabitDetailScreen() {
           setHeatmapLoading(false);
         });
       }
-    }, [user, id])
+    }, [user, id, fetchNotes, fetchHeatmap])
   );
 
   function handleToggle() {

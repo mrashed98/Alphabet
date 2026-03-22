@@ -45,15 +45,6 @@ export default function NoteEditorScreen() {
     navigation.setOptions({ title: isNew ? 'New Note' : 'Edit Note' });
   }, [isNew]);
 
-  // Auto-save on back for editing
-  useEffect(() => {
-    if (!isNew && existing) {
-      return navigation.addListener('beforeRemove', () => {
-        handleSave();
-      }) as () => void;
-    }
-  }, [title, body, habitId, isNew]);
-
   async function handleSave() {
     if (!user) return;
     if (!title.trim() && !body.trim()) return;
@@ -76,6 +67,15 @@ export default function NoteEditorScreen() {
     }
     setSaving(false);
   }
+
+  // Auto-save on back for editing
+  useEffect(() => {
+    if (!isNew && existing) {
+      return navigation.addListener('beforeRemove', () => {
+        handleSave();
+      }) as () => void;
+    }
+  }, [title, body, habitId, isNew, handleSave, navigation, existing]);
 
   function handleDelete() {
     Alert.alert('Delete Note', 'This note will be permanently deleted.', [
