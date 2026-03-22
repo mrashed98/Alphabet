@@ -3,7 +3,7 @@
 export type TaskStatus = 'inbox' | 'todo' | 'in_progress' | 'done' | 'cancelled';
 export type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
 export type HabitFrequency = 'daily' | 'weekly';
-export type LifeEventType = 'birthday' | 'anniversary' | 'wedding' | 'holiday' | 'custom';
+export type LifeEventType = 'birthday' | 'anniversary' | 'wedding' | 'graduation' | 'holiday' | 'custom';
 export type ReminderRecurrence = 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly';
 export type LinkedType = 'task' | 'event' | 'habit' | 'life_event';
 
@@ -161,4 +161,33 @@ export interface NotificationPreferences {
   quiet_hours_end: string | null;   // HH:MM
   created_at: string;
   updated_at: string;
+}
+
+export interface UserPreferences {
+  id: string;
+  user_id: string;
+  country_code: string; // ISO 3166-1 alpha-2, e.g. 'US'
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Holiday {
+  id: string;
+  country_code: string;
+  name: string;
+  date: string; // YYYY-MM-DD
+  year: number;
+}
+
+/** A unified event entry for the calendar view */
+export type CalendarEntryType = 'task' | 'habit' | 'life_event' | 'birthday' | 'holiday';
+
+export interface CalendarEntry {
+  id: string;
+  title: string;
+  type: CalendarEntryType;
+  date: string; // YYYY-MM-DD
+  allDay: boolean;
+  time?: string; // HH:MM for timed events
+  navigateTo?: string; // expo-router href
 }

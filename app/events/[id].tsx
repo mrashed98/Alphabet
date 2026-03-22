@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   View,
   Text,
@@ -39,28 +39,15 @@ export default function LifeEventDetailScreen() {
 
   const event = lifeEvents.find((e) => e.id === id);
   const [editing, setEditing] = useState(false);
-  const [title, setTitle] = useState('');
-  const [eventDate, setEventDate] = useState('');
-  const [eventType, setEventType] = useState<LifeEventType>('custom');
-  const [recurring, setRecurring] = useState(false);
-  const [notes, setNotes] = useState('');
-  const [notify1Month, setNotify1Month] = useState(false);
-  const [notify1Week, setNotify1Week] = useState(true);
-  const [notify1Day, setNotify1Day] = useState(true);
+  const [title, setTitle] = useState(event?.title ?? '');
+  const [eventDate, setEventDate] = useState(event?.event_date ?? '');
+  const [eventType, setEventType] = useState<LifeEventType>(event?.event_type ?? 'custom');
+  const [recurring, setRecurring] = useState(event?.recurring ?? false);
+  const [notes, setNotes] = useState(event?.notes ?? '');
+  const [notify1Month, setNotify1Month] = useState(event?.notify_1_month ?? false);
+  const [notify1Week, setNotify1Week] = useState(event?.notify_1_week ?? true);
+  const [notify1Day, setNotify1Day] = useState(event?.notify_1_day ?? true);
   const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    if (event) {
-      setTitle(event.title);
-      setEventDate(event.event_date);
-      setEventType(event.event_type);
-      setRecurring(event.recurring);
-      setNotes(event.notes ?? '');
-      setNotify1Month(event.notify_1_month);
-      setNotify1Week(event.notify_1_week);
-      setNotify1Day(event.notify_1_day);
-    }
-  }, [event]);
 
   if (!event) {
     return (
