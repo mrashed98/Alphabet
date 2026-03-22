@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Text } from 'react-native';
+import { useTaskStore } from '../../stores/taskStore';
 
 function TabIcon({ icon, focused }: { icon: string; focused: boolean }) {
   return (
@@ -8,6 +9,8 @@ function TabIcon({ icon, focused }: { icon: string; focused: boolean }) {
 }
 
 export default function TabsLayout() {
+  const inboxCount = useTaskStore((s) => s.inboxCount);
+
   return (
     <Tabs
       screenOptions={{
@@ -36,6 +39,8 @@ export default function TabsLayout() {
         options={{
           title: 'Tasks',
           tabBarIcon: ({ focused }) => <TabIcon icon="✅" focused={focused} />,
+          tabBarBadge: inboxCount > 0 ? (inboxCount > 99 ? '99+' : inboxCount) : undefined,
+          tabBarBadgeStyle: { fontSize: 10, minWidth: 16 },
         }}
       />
       <Tabs.Screen
