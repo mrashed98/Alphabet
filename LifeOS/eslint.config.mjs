@@ -28,6 +28,9 @@ export default [
       ...reactHooksPlugin.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off', // Not needed with React 17+
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      // Disable overly strict v7 rules that flag legitimate initialization patterns
+      'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/preserve-manual-memoization': 'off',
     },
     settings: {
       react: { version: 'detect' },
